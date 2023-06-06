@@ -23,7 +23,7 @@ import com.android.composepokemon.pokemonlist.PokemonListScreen
 import com.android.composepokemon.ui.theme.ComposePokemonTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-// https://www.youtube.com/watch?v=aaChg9aJDW4&list=PLQkwcJG4YTCTimTCpEL5FZgaWdIZQuB7m&index=2
+// https://www.youtube.com/watch?v=O6k5Q2LoL0k&list=PLQkwcJG4YTCTimTCpEL5FZgaWdIZQuB7m&index=3
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
