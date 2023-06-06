@@ -17,9 +17,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import com.android.composepokemon.pokemonlist.PokemonListScreen
 import com.android.composepokemon.ui.theme.ComposePokemonTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+// https://www.youtube.com/watch?v=aaChg9aJDW4&list=PLQkwcJG4YTCTimTCpEL5FZgaWdIZQuB7m&index=2
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,6 +35,8 @@ class MainActivity : ComponentActivity() {
                 ){
 
                     composable("pokemon_list_screen"){
+                        
+                        PokemonListScreen(navController = navController)
 
 
                     }
