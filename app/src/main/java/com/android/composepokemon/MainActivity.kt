@@ -15,8 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.*
+
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.android.composepokemon.pokemonlist.PokemonListScreen
 import com.android.composepokemon.ui.theme.ComposePokemonTheme
 import dagger.hilt.android.AndroidEntryPoint
