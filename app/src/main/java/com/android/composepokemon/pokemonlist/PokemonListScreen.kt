@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,8 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -49,9 +52,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.android.composepokemon.R
 import com.android.composepokemon.data.models.PokedexListEntry
+import com.android.composepokemon.data.remote.responses.PokemonList
 import com.android.composepokemon.ui.theme.Purple80
 import com.android.composepokemon.ui.theme.RobotoCondensed
 import com.google.accompanist.coil.CoilImage
@@ -84,6 +90,8 @@ fun PokemonListScreen(
                 hint = "Search"){
 
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            PokemonList(navController = navController)
 
 
         }
@@ -139,6 +147,53 @@ fun SearchBar(modifier: Modifier, hint: String, onSearch: (String) -> Unit ={}){
 
 }
 
+
+@Composable
+fun PokemonList(navController: NavController,
+                viewModel: PokemonListViewModel = hiltViewModel(),
+){
+
+    val pokemonList by remember {
+        viewModel.pokemonList
+    }
+    val endReached by remember {
+        viewModel.endReached
+    }
+    val loadError by remember {
+        viewModel.loadError
+    }
+    val isLoading by remember {
+        viewModel.isLoading
+    }
+
+
+    LazyColumn(contentPadding = PaddingValues(16.dp)){
+
+        val itemCount = if(pokemonList.size%2 == 0){
+            pokemonList.size/2
+        }else{
+            pokemonList.size/2+1
+        }
+
+        items(itemCount){
+
+            // to detect if we have scrolled to the bottom
+            if(it >= itemCount-1 && !endReached){
+
+                viewModel.loadPokemonPaginated()
+            }
+            PokedexRow(rowIndex = it, entries = pokemonList, navController = navController)
+
+        }
+
+    }
+
+
+
+}
+
+
+
 @Composable
 fun PokedexEntry(entry: PokedexListEntry,
                  navController: NavController,
@@ -174,34 +229,57 @@ fun PokedexEntry(entry: PokedexListEntry,
 
 
         Column {
-            
-            CoilImage( request = ImageRequest.Builder(LocalContext.current)
-                .data(entry.imageUrl)
-                .target{
-
-                    viewModel.calcDominantColor(it){ color ->
-
-                        dominantColor = color
 
 
-                    }
-
-                }
-                .build(),
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(entry.imageUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = entry.pokemonName,
-                fadeIn = true,
+                loading = {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary, modifier = Modifier.scale(0.5F)
+                    )
+                },
+                success = { success ->
+                    viewModel.calcDominantColor(success.result.drawable){
+                        dominantColor = it
+                    }
+                    SubcomposeAsyncImageContent()
+                },
                 modifier = Modifier
                     .size(120.dp)
                     .align(CenterHorizontally)
             )
-            {
-                //display progress bar while loading the Image
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.scale(0.5f)
-                )
-
-            }
+            
+//            CoilImage( request = ImageRequest.Builder(LocalContext.current)
+//                .data(entry.imageUrl)
+//                .target{
+//
+//                    viewModel.calcDominantColor(it){ color ->
+//
+//                        dominantColor = color
+//
+//
+//                    }
+//
+//                }
+//                .build(),
+//                contentDescription = entry.pokemonName,
+//                fadeIn = true,
+//                modifier = Modifier
+//                    .size(120.dp)
+//                    .align(CenterHorizontally)
+//            )
+//            {
+//                //display progress bar while loading the Image
+//                CircularProgressIndicator(
+//                    color = MaterialTheme.colorScheme.primary,
+//                    modifier = Modifier.scale(0.5f)
+//                )
+//
+//            }
 
             Text(
                 text = entry.pokemonName,
