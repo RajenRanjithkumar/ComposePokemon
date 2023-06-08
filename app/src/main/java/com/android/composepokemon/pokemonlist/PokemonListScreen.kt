@@ -65,7 +65,8 @@ import com.google.accompanist.coil.CoilImage
 
 @Composable
 fun PokemonListScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: PokemonListViewModel = hiltViewModel()
 ){
 
 
@@ -89,6 +90,8 @@ fun PokemonListScreen(
                 .fillMaxWidth()
                 .padding(16.dp),
                 hint = "Search"){
+
+                viewModel.searchPokemonList(it)
 
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -133,7 +136,7 @@ fun SearchBar(modifier: Modifier, hint: String, onSearch: (String) -> Unit ={}){
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .onFocusChanged {
                     //isHintDisplayed = it != FocusState.Active
-                    isHintDisplayed = !it.isFocused
+                    isHintDisplayed = !it.isFocused && text.isEmpty()
                 }
         )
         if(isHintDisplayed){
@@ -167,6 +170,10 @@ fun PokemonList(navController: NavController,
         viewModel.isLoading
     }
 
+    val isSearching by remember {
+        viewModel.isSearching
+    }
+
 
     LazyColumn(contentPadding = PaddingValues(16.dp)){
 
@@ -179,7 +186,7 @@ fun PokemonList(navController: NavController,
         items(itemCount){
 
             // to detect if we have scrolled to the bottom
-            if(it >= itemCount-1 && !endReached){
+            if(it >= itemCount-1 && !endReached && !isLoading && !isSearching){
 
                 viewModel.loadPokemonPaginated()
             }
@@ -347,6 +354,7 @@ fun PokedexRow(
             if(entries.size >= rowIndex * 2 +1){
 
                 PokedexEntry(
+                    //entry = entries[rowIndex * 2+1]
                     entry = entries[rowIndex * 2 +1],
                     navController = navController
                     , modifier = Modifier.weight(1f)
