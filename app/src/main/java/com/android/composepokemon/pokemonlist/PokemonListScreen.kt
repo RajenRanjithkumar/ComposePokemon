@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -187,6 +188,33 @@ fun PokemonList(navController: NavController,
         }
 
     }
+    
+    
+    Box(
+
+        contentAlignment = Center,
+        modifier = Modifier.fillMaxSize()
+
+    ) {
+
+        if(isLoading){
+
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        }
+        
+        if (loadError.isNotEmpty()){
+            
+            RetrySection(error = loadError) {
+
+                // call the view model when we click the button
+                viewModel.loadPokemonPaginated()
+                
+            }
+            
+        }
+
+
+    }
 
 
 
@@ -338,6 +366,42 @@ fun PokedexRow(
 
 
 }
+
+
+@Composable
+fun RetrySection(error:String, onRetry: () -> Unit){
+
+    Column{
+        
+        Text(error, color = Color.Red, fontSize = 18.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = { onRetry()},
+            modifier = Modifier.align(CenterHorizontally)
+            ) {
+            
+            Text(text = "Retry")
+            
+        }
+
+        
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Composable
 fun PokedexLazyRow(
