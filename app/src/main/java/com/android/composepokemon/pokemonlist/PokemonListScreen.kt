@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.*
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -152,7 +153,7 @@ fun SearchBar(modifier: Modifier, hint: String, onSearch: (String) -> Unit ={}){
 }
 
 
-@Composable
+/*@Composable
 fun PokemonList(navController: NavController,
                 viewModel: PokemonListViewModel = hiltViewModel(),
 ){
@@ -191,6 +192,97 @@ fun PokemonList(navController: NavController,
                 viewModel.loadPokemonPaginated()
             }
             PokedexRow(rowIndex = it, entries = pokemonList, navController = navController)
+
+        }
+
+    }
+
+
+    Box(
+
+        contentAlignment = Center,
+        modifier = Modifier.fillMaxSize()
+
+    ) {
+
+        if(isLoading){
+
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        }
+
+        if (loadError.isNotEmpty()){
+
+            RetrySection(error = loadError) {
+
+                // call the view model when we click the button
+                viewModel.loadPokemonPaginated()
+
+            }
+
+        }
+
+
+    }
+
+
+
+}
+
+ */
+
+
+@Composable
+fun PokemonList(navController: NavController,
+                viewModel: PokemonListViewModel = hiltViewModel(),
+){
+
+    val pokemonList by remember {
+        viewModel.pokemonList
+    }
+    val endReached by remember {
+        viewModel.endReached
+    }
+    val loadError by remember {
+        viewModel.loadError
+    }
+    val isLoading by remember {
+        viewModel.isLoading
+    }
+
+    val isSearching by remember {
+        viewModel.isSearching
+    }
+
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .padding(start = 5.dp, end = 5.dp)
+
+    ){
+
+//        val itemCount = if(pokemonList.size%2 == 0){
+//            pokemonList.size/2
+//        }else{
+//            pokemonList.size/2+1
+//        }
+
+        items(pokemonList.size){
+
+            // to detect if we have scrolled to the bottom
+            if(it >= pokemonList.size-1 && !endReached && !isLoading && !isSearching){
+
+                viewModel.loadPokemonPaginated()
+            }
+
+            PokedexEntry(
+                entry = pokemonList[it],
+                navController = navController
+                ,modifier = Modifier
+                    .size(200.dp)
+                    .padding(5.dp)
+
+            )
 
         }
 
@@ -244,6 +336,7 @@ fun PokedexEntry(entry: PokedexListEntry,
     Box(
         contentAlignment = Center,
         modifier = modifier
+
             .shadow(5.dp, RoundedCornerShape(10.dp))
             .clip((RoundedCornerShape(10.dp)))
             .background(
