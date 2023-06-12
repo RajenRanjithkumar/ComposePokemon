@@ -1,8 +1,10 @@
 package com.android.composepokemon.pokemonlist
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.capitalize
@@ -131,6 +133,12 @@ class PokemonListViewModel @Inject constructor(
                     isLoading.value = false
 
                 }
+
+                is Resource.Loading ->{
+
+                    //handle this
+                }
+
             }
 
         }
